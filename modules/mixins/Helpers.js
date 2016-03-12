@@ -61,7 +61,7 @@ var Helpers = {
           var element = null;
 
           scrollSpy.addStateHandler((function() {
-            if(scroller.getActiveLink() != to) {
+            if(scroller.getActiveLink() !== to) {
                 this.setState({ active : false });
             }
           }).bind(this));
@@ -73,17 +73,16 @@ var Helpers = {
             }
 
             var cords = element.getBoundingClientRect();
-            var elemTopBound = (cords.top + y);
-            var elemBottomBound = elemTopBound + cords.height;
+            var elemTopBound = Math.floor(cords.top + y);
+            var elemBottomBound = Math.floor(elemTopBound + cords.height);
             var offsetY = y - this.props.offset;
-            var isInside = (offsetY >= elemTopBound && offsetY <= elemBottomBound);
-            var isOutside = (offsetY < elemTopBound || offsetY > elemBottomBound);
+            var isInside = (offsetY >= elemTopBound && offsetY < elemBottomBound);
+            var isOutside = (offsetY < elemTopBound || offsetY >= elemBottomBound);
             var activeLink = scroller.getActiveLink();
 
             if (isOutside && activeLink === to) {
               scroller.setActiveLink(void 0);
               this.setState({ active : false });
-
             } else if (isInside && activeLink != to) {
               scroller.setActiveLink(to);
               this.setState({ active : true });
@@ -93,7 +92,6 @@ var Helpers = {
               }
 
               scrollSpy.updateStates();
-
             }
           }).bind(this));
         }
