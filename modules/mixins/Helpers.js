@@ -59,8 +59,6 @@ var Helpers = {
         if(this.props.spy) {
           var to = this.props.to;
           var element = null;
-          var elemTopBound = 0;
-          var elemBottomBound = 0;
 
           scrollSpy.addStateHandler((function() {
             if(scroller.getActiveLink() != to) {
@@ -72,12 +70,11 @@ var Helpers = {
 
             if(!element) {
                 element = scroller.get(to);
-
-                var cords = element.getBoundingClientRect();
-                elemTopBound = (cords.top + y);
-                elemBottomBound = elemTopBound + cords.height;
             }
 
+            var cords = element.getBoundingClientRect();
+            var elemTopBound = (cords.top + y);
+            var elemBottomBound = elemTopBound + cords.height;
             var offsetY = y - this.props.offset;
             var isInside = (offsetY >= elemTopBound && offsetY <= elemBottomBound);
             var isOutside = (offsetY < elemTopBound || offsetY > elemBottomBound);
