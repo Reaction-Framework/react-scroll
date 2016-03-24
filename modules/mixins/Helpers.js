@@ -71,7 +71,14 @@ var Helpers = {
 
           scrollSpy.addStateHandler((function() {
             if(scroller.getActiveLink() !== to) {
-                this.setState({ active : false });
+              this.setState({ active : false });
+              return;
+            }
+
+            this.setState({ active : true });
+
+            if(this.props.onSetActive) {
+              this.props.onSetActive(to);
             }
           }).bind(this));
 
@@ -94,12 +101,6 @@ var Helpers = {
               this.setState({ active : false });
             } else if (isInside && activeLink != to) {
               scroller.setActiveLink(to);
-              this.setState({ active : true });
-
-              if(this.props.onSetActive) {
-                this.props.onSetActive(to);
-              }
-
               scrollSpy.updateStates();
             }
           }).bind(this));
