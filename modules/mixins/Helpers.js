@@ -52,6 +52,15 @@ var Helpers = {
 
       },
 
+      componentWillReceiveProps: function(nextProps) {
+        var active = nextProps.active;
+        if (active !== undefined) {
+          this.setState({
+            active: active
+          });
+        }
+      },
+
       componentDidMount: function() {
 
         scrollSpy.mount();
