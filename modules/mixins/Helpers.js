@@ -5,26 +5,30 @@ var ReactDOM = require('react-dom');
 
 var animateScroll = require('./animate-scroll');
 var scrollSpy = require('./scroll-spy');
-var scroller = require('./scroller');
+var defaultScroller = require('./scroller');
 
 var Helpers = {
 
-  Scroll: function (Component) {
+  Scroll: function (Component, customScroller) {
+
+    var scroller = customScroller || defaultScroller;
 
     return React.createClass({
 
       propTypes: {
         to: React.PropTypes.string.isRequired,
         offset: React.PropTypes.number,
-        onClick: React.PropTypes.func
+        delay: React.PropTypes.number,
+        onClick: React.PropTypes.func,
+        duration: React.PropTypes.oneOfType([React.PropTypes.number, React.PropTypes.func])
       },
-
+      
       getDefaultProps: function() {
         return {offset: 0};
       },
 
-      scrollTo : function(to) {
-        scroller.scrollTo(to, this.props.smooth, this.props.duration, this.props.offset);
+      scrollTo : function(to, props) {
+          scroller.scrollTo(to, props);
       },
 
       handleClick: function(event) {
@@ -48,7 +52,7 @@ var Helpers = {
          * do the magic!
          */
 
-        this.scrollTo(this.props.to);
+        this.scrollTo(this.props.to, this.props);
 
       },
 
@@ -138,10 +142,10 @@ var Helpers = {
       },
       componentDidMount: function() {
         var domNode = ReactDOM.findDOMNode(this);
-        scroller.register(this.props.name, domNode);
+        defaultScroller.register(this.props.name, domNode);
       },
       componentWillUnmount: function() {
-        scroller.unregister(this.props.name);
+        defaultScroller.unregister(this.props.name);
       },
       render: function() {
         return React.createElement(Component, this.props);
