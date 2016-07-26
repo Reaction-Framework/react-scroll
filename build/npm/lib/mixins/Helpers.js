@@ -6,6 +6,21 @@ var ReactDOM = require('react-dom');
 var animateScroll = require('./animate-scroll');
 var scrollSpy = require('./scroll-spy');
 var defaultScroller = require('./scroller');
+var assign = require('object-assign');
+
+
+var protoTypes = {
+  to: React.PropTypes.string.isRequired,
+  containerId: React.PropTypes.string,
+  activeClass:React.PropTypes.string,
+  spy: React.PropTypes.bool,
+  smooth: React.PropTypes.bool,
+  offset: React.PropTypes.number,
+  delay: React.PropTypes.number,
+  isDynamic: React.PropTypes.bool,
+  onClick: React.PropTypes.func,
+  duration: React.PropTypes.oneOfType([React.PropTypes.number, React.PropTypes.func])
+};
 
 var Helpers = {
 
@@ -15,14 +30,8 @@ var Helpers = {
 
     return React.createClass({
 
-      propTypes: {
-        to: React.PropTypes.string.isRequired,
-        offset: React.PropTypes.number,
-        delay: React.PropTypes.number,
-        onClick: React.PropTypes.func,
-        duration: React.PropTypes.oneOfType([React.PropTypes.number, React.PropTypes.func])
-      },
-      
+      propTypes: protoTypes,
+
       getDefaultProps: function() {
         return {offset: 0};
       },
@@ -51,7 +60,6 @@ var Helpers = {
         /*
          * do the magic!
          */
-
         this.scrollTo(this.props.to, this.props);
 
       },
@@ -86,8 +94,12 @@ var Helpers = {
 
       componentDidMount: function() {
 
-        scrollSpy.mount();
-      
+        var containerId = this.props.containerId;
+
+        var scrollSpyContainer = containerId ? document.getElementById(containerId) : document;
+
+        scrollSpy.mount(scrollSpyContainer);
+
 
         if(this.props.spy) {
           var to = this.props.to;
@@ -101,10 +113,10 @@ var Helpers = {
             }
           }).bind(this));
 
-          scrollSpy.addSpyHandler((function(y) {
-
-            if(!element) {
+          var spyHandler = function(y) {
+            if(!element || this.props.isDynamic) {
                 element = scroller.get(to);
+                if(!element){ return;}
 
                 var cords = element.getBoundingClientRect();
                 elemTopBound = (cords.top + y);
@@ -112,8 +124,8 @@ var Helpers = {
             }
 
             var offsetY = y - this.props.offset;
-            var isInside = (offsetY >= elemTopBound && offsetY <= elemBottomBound);
-            var isOutside = (offsetY < elemTopBound || offsetY > elemBottomBound);
+            var isInside = (offsetY >= Math.floor(elemTopBound) && offsetY <= Math.floor(elemBottomBound));
+            var isOutside = (offsetY < Math.floor(elemTopBound) || offsetY > Math.floor(elemBottomBound));
             var activeLink = scroller.getActiveLink();
 
             if (isOutside && activeLink === to) {
@@ -131,13 +143,16 @@ var Helpers = {
               scrollSpy.updateStates();
 
             }
-          }).bind(this));
+          }.bind(this);
+
+          scrollSpy.addSpyHandler(spyHandler);
         }
       },
       componentWillUnmount: function() {
         scrollSpy.unmount();
       },
       render: function() {
+
         var className = "";
         if(this.state && this.state.active) {
           className = ((this.props.className || "") + " " + (this.props.activeClass || "active")).trim();
@@ -145,9 +160,12 @@ var Helpers = {
           className = this.props.className
         }
 
-        var props = {};
-        for(var prop in this.props) {
-          props[prop] = this.props[prop];
+        var props = assign({}, this.props);
+
+        for(var prop in protoTypes) {
+          if(props.hasOwnProperty(prop)) {
+            delete props[prop];
+          }
         }
 
         props.className = className;

@@ -25,7 +25,7 @@ Checkout examples
 ```js
 
 var React   = require('react');
-var Scroll  = require('react-scroll'); 
+var Scroll  = require('react-scroll');
 
 var Link       = Scroll.Link;
 var DirectLink = Scroll.DirectLink;
@@ -89,6 +89,24 @@ var Section = React.createClass({
           test 6 (anchor)
         </div>
 
+
+        <Link to="firstInsideContainer" containerId="containerElement">
+          Go to first element inside container
+        </Link>
+
+        <Link to="secondInsideContainer" containerId="containerElement">
+          Go to second element inside container
+        </Link>
+        <div className="element" id="containerElement">
+          <Element name="firstInsideContainer">
+            first element inside container
+          </Element>
+
+          <Element name="secondInsideContainer">
+            second element inside container
+          </Element>
+        </div>
+
         <a onClick={this.scrollToTop}>To the top!</a>
         <br/>
         <a onClick={this.scrollToBottom}>To the bottom!</a>
@@ -114,6 +132,8 @@ React.render(
 
 > to - target to scroll to
 
+> containerId - container to listen for scroll events and to perform scrolling in
+
 > spy - make Link selected when scroll is at it's targets position
 
 > smooth - animate the scrolling
@@ -124,14 +144,17 @@ React.render(
 
 > delay - wait x seconds before scroll
 
+> isDynamic - in case the distance has to be recalculated - if you have content that expands etc.
+
 ```js
-<Link activeClass="active" 
-      to="target" 
-      spy={true} 
-      smooth={true} 
-      offset={50} 
-      duration={500} 
+<Link activeClass="active"
+      to="target"
+      spy={true}
+      smooth={true}
+      offset={50}
+      duration={500}
       delay={1000}
+      isDynamic={true}
 >
   Your name
 </Link>
@@ -210,7 +233,7 @@ scroll.scrollMore(10, options);
 
 ```js
 
-var Scroll = require('react-scroll'); 
+var Scroll = require('react-scroll');
 var Events = Scroll.Events;
 
 Events.scrollEvent.register('begin', function(to, element) {
@@ -232,7 +255,7 @@ Events.scrollEvent.register('end', function(to, element) {
 
 > Remove events
 
-```js 
+```js
 
 Events.scrollEvent.remove('begin');
 Events.scrollEvent.remove('end');
@@ -245,7 +268,7 @@ Events.scrollEvent.remove('end');
 
 ```js
 var React   = require('react');
-var Scroll  = require('react-scroll'); 
+var Scroll  = require('react-scroll');
 var Helpers = Scroll.Helpers;
 
 var Element = React.createClass({
@@ -274,8 +297,28 @@ module.exports = Helpers.Scroll(Link);
 
 ```
 
+#### Changelog
+
+> v1.0.24
+- you can now pass any native property to Link/Element
+- patched minor bugs from v1.0.21 > v1.0.24
+
+> v1.0.21
+- scrollToBottom and scrollMore now works inside a container.
+
+> v1.0.20
+- Published, somehow the publish failed
+
+> v1.0.19
+- Property warnings has now been removed.
+
+> v1.0.18
+- It's now possible to scroll within a container, checkout the code under examples.
+
+> v1.0.17
+- isDynamic property has been added. To allow scrollSpy to recalculate components that expand
+
 #### Things that needs to be done - feel free to contribute.
 - Being able to use react-scroll within a div.
 - Integrate react-scroll with react-router
 - Hash-scrolling.
-
